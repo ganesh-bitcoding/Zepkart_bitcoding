@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>WelCome Back to ZepKart !!</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    />
+    <!-- <link rel="stylesheet" href="assets/css/style.css"> -->
+    <style>
+      body {
+        background-color: #fcffde;
+      }
+
+      .registration-form {
+        padding: 50px 0;
+      }
+
+      .registration-form form {
+        background-color: #fff;
+        max-width: 600px;
+        margin: auto;
+        padding: 50px 70px;
+        border-top-left-radius: 30px;
+        border-top-right-radius: 30px;
+        box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.075);
+      }
+
+      .registration-form .form-icon {
+        text-align: center;
+        background-color: #f1ff28;
+        border-radius: 50%;
+        font-size: 40px;
+        color: rgb(34, 13, 13);
+        width: 100px;
+        height: 100px;
+        margin: auto;
+        margin-bottom: 50px;
+        line-height: 100px;
+      }
+
+      .registration-form .item {
+        border-radius: 20px;
+        margin-bottom: 25px;
+        padding: 10px 20px;
+      }
+
+      .registration-form .create-account {
+        border-radius: 30px;
+        padding: 10px 20px;
+        font-size: 18px;
+        font-weight: bold;
+        background-color: #f1ff28;
+        border: none;
+        color: rgb(34, 13, 13);
+        margin-top: 20px;
+      }
+
+      .registration-form .social-media {
+        max-width: 600px;
+        background-color: #fff;
+        margin: auto;
+        padding: 35px 0;
+        text-align: center;
+        border-bottom-left-radius: 30px;
+        border-bottom-right-radius: 30px;
+        color: #c9ca9f;
+        border-top: 1px solid #dee9ff;
+        box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.075);
+      }
+
+      @media (max-width: 576px) {
+        .registration-form form {
+          padding: 50px 20px;
+        }
+
+        .registration-form .form-icon {
+          width: 70px;
+          height: 70px;
+          font-size: 30px;
+          line-height: 70px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="registration-form">
+      <form method="post" id="registration-form">
+        {% csrf_token %}
+        <div class="form-icon">
+          <span><i class="icon icon-user"></i></span>
+        </div>
+        <div class="form-group">
+          <input
+            type="text"
+            class="form-control item"
+            id="username"
+            placeholder="Username or Email id"
+          />
+        </div>
+        <div class="form-group" id="messageUser"></div>
+        <div class="form-group">
+          <input
+            type="password"
+            class="form-control item"
+            id="password"
+            placeholder="Password"
+          />
+        </div>
+        <div class="form-group" id="messagePass"></div>
+        <div class="form-group" id="message"></div>
+        <div class="form-group">
+          <input
+            type="submit"
+            class="btn btn-block create-account"
+            value="Login to My Account"
+          />
+        </div>
+      </form>
+    </div>
+    <script
+      type="text/javascript"
+      src="https://code.jquery.com/jquery-3.2.1.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.15/jquery.mask.min.js"
+    ></script>
+    <!-- <script src="assets/js/script.js"></script> -->
+    <script>
+      document
+        .querySelector("#registration-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          let message = document.getElementById("message");
+          let messageUser = document.getElementById("messageUser");
+          let messagePass = document.getElementById("messagePass");
+          let Username = document.getElementById("username").value;
+          let Password = document.getElementById("password").value;
+          let csrftoken = document.querySelector(
+            "[name=csrfmiddlewaretoken]"
+          ).value;
+
+          messageUser.innerHTML = "";
+          messagePass.innerHTML = "";
+          message.innerHTML = "";
+          if (!Username) {
+            messageUser.innerHTML =
+              '<div class="alert alert-danger">Username Cannot be Empty</div>';
+          }
+          if (!Password) {
+            messagePass.innerHTML =
+              '<div class="alert alert-danger"> Password Cannot be Empty</div>';
+          }
+
+          if (Username && Password) {
+            data = {
+              Username: Username,
+              Password: Password,
+            };
+            fetch("/accounts/login/", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrftoken,
+              },
+              body: JSON.stringify(data),
+            })
+              .then((res) => {
+                if (!res.ok) {
+                  return res.json().then((text) => {
+                    throw text;
+                  });
+                }
+                return res.json();
+              })
+              .then((result) => {
+                message.innerHTML = `<div class="alert alert-success">${result.message}</div>`;
+                if (result.redirect_url) {
+                  window.location.href = result.redirect_url; 
+                }
+              })
+              .catch((err) => {
+                message.innerHTML = `<div class="alert alert-danger">${err.message}</div>`;
+              });
+          }
+        });
+    </script>
+  </body>
+</html>
