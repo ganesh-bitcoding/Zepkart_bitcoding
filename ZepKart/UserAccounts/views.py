@@ -8,7 +8,7 @@ from django.contrib.auth import login, logout, authenticate
 
 class RegisterView(generic.View):
     model = User
-    template_name = 'Register.html'
+    template_name = 'Authentication/Register.html'
 
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name)
@@ -39,7 +39,7 @@ class RegisterView(generic.View):
 
 class LoginView(generic.View):
     success_url = '/'
-    template_name = "login.html"
+    template_name = "Authentication/login.html"
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name)
     
