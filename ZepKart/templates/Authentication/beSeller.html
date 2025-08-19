@@ -1,5 +1,4 @@
 {% extends "../base2.html" %} 
-{% load static %}
 {% block start %}
 <div class="registration-form">
   <form method="post" id="registration-form">
@@ -304,17 +303,17 @@
       }
 
       data = {
-        storename: storename,
-        phone_number: phone_number,
-        address: address,
-        business_type: business_type,
-        gst_number: gst_number,
-        pan_number: pan_number,
-        bank_account_number: bank_account_number,
-        ifsc_code: ifsc_code,
-        bank_name: bank_name,
-        pickup_address: pickup_address,
-        return_address: return_address,
+        "storename": storename,
+        "phone_number": phone_number,
+        "address": address,
+        "business_type": business_type,
+        "gst_number": gst_number,
+        "pan_number": pan_number,
+        "bank_account_number": bank_account_number,
+        "ifsc_code": ifsc_code,
+        "bank_name": bank_name,
+        "pickup_address": pickup_address,
+        "return_address": return_address,
       };
       fetch("/accounts/be-seller", {
         method: "POST",

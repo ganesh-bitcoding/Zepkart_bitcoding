@@ -83,7 +83,39 @@ class BeSellerView(LoginRequiredMixin, generic.View):
     model=Seller
     template_name="Authentication/beSeller.html"
     def get(self, request, *args, **kwargs):
-        return render(request, self.template_name)
-    def post(self, request, *args, **kwargs):
+        context = {
+            "title": "Be Seller" 
+        }
+        return render(request, self.template_name, context)
 
-        pass
+    def post(self, request, *args, **kwargs):
+        if request.method == 'POST':
+            try :
+                data = json.loads(request.body)
+                
+                storename = data.get('storename')
+                phone_number = data.get('phone_number')
+                address = data.get('address')
+                business_type = data.get('business_type')
+                gst_number = data.get('gst_number')
+                pan_number = data.get('pan_number')
+                bank_account_number = data.get('bank_account_number')
+                ifsc_code = data.get('ifsc_code')
+                bank_name = data.get('bank_name')
+                pickup_address = data.get('pickup_address')
+                return_address = data.get('return_address')
+                User_group = Group.objects.get(name='Seller')
+                user = request.user
+                new_seller = Seller(user=user,store_name=storename,phone_number=phone_number,address=address,business_type=business_type,gst_number=gst_number,pan_number=pan_number,bank_account_number=bank_account_number,ifsc_code=ifsc_code,bank_name=bank_name,pickup_address=pickup_address,return_address=return_address)
+                new_seller.save()
+                user.groups.add(User_group)
+                return redirect('login')
+            except Exception as e:
+                return JsonResponse({"error": str(e)}, status=400)
+        else :
+            return render(request, self.template_name)
+    
+    def get_context_data(self,*args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['title'] = "Be Seller"
+        return context
