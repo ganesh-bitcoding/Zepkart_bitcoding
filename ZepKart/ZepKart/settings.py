@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'UserAccounts',
+    'Product',
 ]
 
 MIDDLEWARE = [
@@ -66,6 +68,18 @@ TEMPLATES = [
         },
     },
 ]
+
+# URL to access static files in templates
+STATIC_URL = '/static/'
+
+# Folder where Django will look for additional static files
+STATICFILES_DIRS = [
+    BASE_DIR / "static",  # Project-level static folder
+]
+
+# Folder where 'collectstatic' will gather all static files for production
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
 
 WSGI_APPLICATION = 'ZepKart.wsgi.application'
 

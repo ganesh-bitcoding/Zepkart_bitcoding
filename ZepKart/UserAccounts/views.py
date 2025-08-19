@@ -4,7 +4,8 @@ from django.http import JsonResponse
 from django.contrib.auth.models import User, Group
 import json, re
 from django.contrib.auth import login, logout, authenticate
-
+from .models import Seller
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 class RegisterView(generic.View):
     model = User
@@ -78,3 +79,11 @@ class LogoutView(generic.View):
         logout(request)
         return redirect(self.success_url)  
 
+class BeSellerView(LoginRequiredMixin, generic.View):
+    model=Seller
+    template_name="Authentication/beSeller.html"
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)
+    def post(self, request, *args, **kwargs):
+
+        pass

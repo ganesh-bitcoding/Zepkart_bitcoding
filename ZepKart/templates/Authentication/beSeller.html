@@ -1,0 +1,346 @@
+{% extends "../base2.html" %} 
+{% load static %}
+{% block start %}
+<div class="registration-form">
+  <form method="post" id="registration-form">
+    {% csrf_token %}
+    <div class="form-icon">
+      <span><i class="icon icon-user"></i></span>
+    </div>
+    <div class="form-group">
+      <input
+        type="text"
+        class="form-control item"
+        id="StoreName"
+        name="StoreName"
+        placeholder="Store Name"
+      />
+    </div>
+    <div class="form-group" id="messagestorename"></div>
+    <div class="form-group">
+      <input
+        type="text"
+        class="form-control item"
+        id="phone_number"
+        placeholder="Phone Number"
+      />
+    </div>
+    <div class="form-group" id="messagephonenumber"></div>
+    <div class="form-group">
+      <textarea
+        name=""
+        class="form-control item"
+        id="address"
+        placeholder="Address"
+      ></textarea>
+    </div>
+    <div class="form-group" id="messageaddress"></div>
+    <div class="form-group">
+      <select class="form-control item" id="business_type" name="business_type">
+        <option value="">-- Select Business Type --</option>
+        <option value="individual">Individual</option>
+        <option value="sole">Sole Proprietorship</option>
+        <option value="partnership">Partnership</option>
+        <option value="company">Company</option>
+      </select>
+    </div>
+    <div class="form-group" id="messageBussitype"></div>
+    <div class="form-group">
+      <input
+        type="text"
+        class="form-control item"
+        id="gst_number"
+        placeholder="GST Number"
+      />
+    </div>
+    <div class="form-group" id="messagegst"></div>
+    <div class="form-group">
+      <input
+        type="text"
+        class="form-control item"
+        id="pan_number"
+        placeholder="PAN Number "
+      />
+    </div>
+    <div class="form-group" id="messagepan"></div>
+    <div class="form-group">
+      <input
+        type="text"
+        class="form-control item"
+        id="bank_account_number"
+        placeholder="Bank Account Number "
+      />
+    </div>
+    <div class="form-group" id="messagebanknum"></div>
+    <div class="form-group">
+      <input
+        type="text"
+        class="form-control item"
+        id="ifsc_code"
+        placeholder="IFSC code"
+      />
+    </div>
+    <div class="form-group" id="messageifsc"></div>
+    <div class="form-group">
+      <input
+        type="text"
+        class="form-control item"
+        id="bank_name"
+        placeholder="Bank Name "
+      />
+    </div>
+    <div class="form-group" id="messagebankName"></div>
+    <div class="form-group">
+      <textarea
+        name=""
+        class="form-control item"
+        id="pickup_address"
+        placeholder="Pickup Address"
+      ></textarea>
+    </div>
+    <div class="form-check mb-2">
+      <input
+        class="form-check-input"
+        type="checkbox"
+        id="pickAddressCheck"
+        name="SameAsAddresss"
+      />
+      <label class="form-check-label" for="pickAddressCheck">
+        Same as Address
+      </label>
+    </div>
+    <div class="form-group" id="messagepick"></div>
+    <div class="form-group">
+      <textarea
+        name=""
+        class="form-control item"
+        id="return_address"
+        placeholder="Return Address"
+      ></textarea>
+    </div>
+    <div class="form-check mb-2">
+      <input
+        class="form-check-input"
+        type="checkbox"
+        id="returnAddressCheck"
+        name="SameAsAddresss"
+      />
+      <label class="form-check-label" for="returnAddressCheck">
+        Same as Address
+      </label>
+    </div>
+    <div class="form-check">
+  <input type="checkbox" class="form-check-input" id="returnSamePickup">
+  <label class="form-check-label" for="returnSamePickup">Same as Pickup Address</label>
+</div>
+    <div class="form-group" id="messagereturn"></div>
+    <div class="form-group">
+      <input
+        type="submit"
+        class="btn btn-block create-account"
+        value="Become Seller !!"
+      />
+    </div>
+  </form>
+</div>
+<script
+  type="text/javascript"
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+></script>
+<script
+  type="text/javascript"
+  src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.15/jquery.mask.min.js"
+></script>
+<!-- <script src="assets/js/script.js"></script> -->
+<script>
+  const pickCheck = document.getElementById("pickAddressCheck");
+  const returnSameAddress = document.getElementById("returnAddressCheck");
+  const returnSamePickup = document.getElementById("returnSamePickup");
+
+  // When pickup checkbox changes
+  pickCheck.addEventListener("change", function () {
+    if (this.checked && returnSameAddress.checked) {
+      // If pickup is same as address and return is same as address
+      returnSamePickup.checked = true; // auto-check return same as pickup
+    }
+    if (!this.checked) {
+      // If pickup unchecked, uncheck return same as pickup
+      returnSamePickup.checked = false;
+    }
+  });
+
+  // When return same as address changes
+  returnSameAddress.addEventListener("change", function () {
+    if (this.checked && pickCheck.checked) {
+      returnSamePickup.checked = true; // cascade effect
+    } else if (!this.checked) {
+      returnSamePickup.checked = false;
+    }
+  });
+  function makeChild(messageinfo) {
+    let div = document.createElement("div");
+    div.setAttribute("class", "alert alert-danger");
+    let text = document.createTextNode(messageinfo);
+    div.appendChild(text);
+    return div;
+  }
+  document
+    .querySelector("#registration-form")
+    .addEventListener("submit", function (e) {
+      e.preventDefault();
+      let storename = document.getElementById("StoreName").value;
+      let phone_number = document.getElementById("phone_number").value;
+      let address = document.getElementById("address").value;
+      let business_type = document.getElementById("business_type").value;
+      let gst_number = document.getElementById("gst_number").value;
+      let pan_number = document.getElementById("pan_number").value;
+      let bank_account_number = document.getElementById(
+        "bank_account_number"
+      ).value;
+      let ifsc_code = document.getElementById("ifsc_code").value;
+      let bank_name = document.getElementById("bank_name").value;
+      let pickup_address = document.getElementById("pickup_address").value;
+      let return_address = document.getElementById("return_address").value;
+      let sameaddpick = document.getElementById("pickAddressCheck").checked;
+      let sameaddretu = document.getElementById("returnAddressCheck").checked;
+      let samepickretu = document.getElementById("returnSamePickup").checked;
+      let csrftoken = document.querySelector(
+        "[name=csrfmiddlewaretoken]"
+      ).value;
+      messagestorename.innerHTML = "";
+      messagephonenumber.innerHTML = "";
+      messageaddress.innerHTML = "";
+      messageBussitype.innerHTML = "";
+      messagegst.innerHTML = "";
+      messagepan.innerHTML = "";
+      messagebanknum.innerHTML = "";
+      messageifsc.innerHTML = "";
+      messagebankName.innerHTML = "";
+      messagepick.innerHTML = "";
+      messagereturn.innerHTML = "";
+
+      if (!storename) {
+        document
+          .querySelector("#messagestorename")
+          .appendChild(makeChild("You must have Store Name"));
+      }
+      if (!phone_number) {
+        document
+          .querySelector("#messagephonenumber")
+          .appendChild(makeChild("You must have to add the Phone number"));
+      }
+      if (!address) {
+        document
+          .querySelector("#messageaddress")
+          .appendChild(makeChild("You must have to add the Address of store"));
+      }
+      if (business_type === "") {
+        document
+          .querySelector("#messageBussitype")
+          .appendChild(makeChild("You must have to tell the Bussiness Type"));
+      }
+      if (!gst_number) {
+        document
+          .querySelector("#messagegst")
+          .appendChild(
+            makeChild("You must have to tell the Your Autorized GST Number")
+          );
+      }
+      if (!pan_number) {
+        document
+          .querySelector("#messagepan")
+          .appendChild(
+            makeChild(
+              "You must have to tell the PAN number ZepKart Works Legally only "
+            )
+          );
+      }
+      if (!bank_account_number) {
+        document
+          .querySelector("#messagebanknum")
+          .appendChild(
+            makeChild(
+              "You must have to tell the Bank Details for selling the product"
+            )
+          );
+      }
+      if (!ifsc_code) {
+        document
+          .querySelector("#messageifsc")
+          .appendChild(
+            makeChild(
+              "You must have to tell the Bank Details for selling the product"
+            )
+          );
+      }
+      if (!bank_name) {
+        document
+          .querySelector("#messagebankName")
+          .appendChild(
+            makeChild(
+              "You must have to tell the Bank Details for selling the product"
+            )
+          );
+      }
+      if (!pickup_address && !(sameaddpick)) {
+        document
+          .querySelector("#messagepick")
+          .appendChild(makeChild("You must have to tell the Pick UP Address"));
+      }
+      if (sameaddpick && !pickup_address) {
+        pickup_address = address;
+      }
+      if (!return_address && !sameaddretu && !samepickretu ) {
+        document
+          .querySelector("#messagereturn")
+          .appendChild(makeChild("You must have to tell the Return Address"));
+      }
+      if (sameaddretu && !return_address) {
+        return_address = address;
+      }
+
+      if (samepickretu && !return_address && pickup_address){
+        return_address = pickup_address;
+      }
+
+      data = {
+        storename: storename,
+        phone_number: phone_number,
+        address: address,
+        business_type: business_type,
+        gst_number: gst_number,
+        pan_number: pan_number,
+        bank_account_number: bank_account_number,
+        ifsc_code: ifsc_code,
+        bank_name: bank_name,
+        pickup_address: pickup_address,
+        return_address: return_address,
+      };
+      fetch("/accounts/be-seller", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrftoken,
+        },
+        body: JSON.stringify(data),
+      })
+        .then((res) => {
+          if (!res.ok) {
+            return res.json().then((text) => {
+              throw text;
+            });
+          }
+          return res.json();
+        })
+        .then((result) => {
+          message.innerHTML = `<div class="alert alert-success">${result.message}</div>`;
+          if (result.redirect_url) {
+            window.location.href = result.redirect_url;
+          }
+        })
+        .catch((err) => {
+          message.innerHTML = `<div class="alert alert-danger">${err.message}</div>`;
+        });
+    });
+</script>
+{% endblock %}
