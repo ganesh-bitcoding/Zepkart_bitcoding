@@ -1,0 +1,284 @@
+{% extends "../base2.html" %} {% block title %}Updating Product on {{ user
+}}{%endblock %} {% block start %}
+<div class="registration-form">
+  <form
+    method="post"
+    enctype="multipart/form-data"
+    id="product-form"
+    data-productid="{{ product.id }}"
+  >
+    {% csrf_token %}
+    <div class="form-icon">
+      <span><i class="fa-solid fa-box-open"></i></span>
+    </div>
+
+    <!-- Product Name -->
+    <div class="form-group">
+      <input
+        type="text"
+        class="form-control item"
+        id="name"
+        name="name"
+        value="{{ product.name }}"
+        placeholder="Product Name"
+      />
+    </div>
+    <div class="form-group" id="messageName"></div>
+
+    <!-- Description -->
+    <div class="form-group">
+      <textarea
+        class="form-control item"
+        id="description"
+        name="description"
+        placeholder="Product Description"
+      >
+{{ product.description }}</textarea
+      >
+    </div>
+    <div class="form-group" id="messageDescription"></div>
+
+    <!-- Category -->
+    <div class="form-group">
+      <input
+        type="text"
+        class="form-control item"
+        id="category"
+        name="category"
+        value="{{ product.category }}"
+        placeholder="Category"
+      />
+    </div>
+    <div class="form-group" id="messageCategory"></div>
+
+    <!-- Price -->
+    <div class="form-group">
+      <input
+        type="number"
+        step="0.01"
+        class="form-control item"
+        id="price"
+        name="price"
+        value="{{ product.price }}"
+        placeholder="Price"
+      />
+    </div>
+    <div class="form-group" id="messagePrice"></div>
+
+    <!-- Discount Price -->
+    <div class="form-group">
+      <input
+        type="number"
+        step="0.01"
+        class="form-control item"
+        id="discount_price"
+        name="discount_price"
+        value="{{ product.discount_price }}"
+        placeholder="Discount Price (Optional)"
+      />
+    </div>
+    <div class="form-group" id="messageDiscount"></div>
+
+    <!-- Stock Quantity -->
+    <div class="form-group">
+      <input
+        type="number"
+        class="form-control item"
+        id="stock_quantity"
+        name="stock_quantity"
+        value="{{ product.stock_quantity }}"
+        placeholder="Stock Quantity"
+      />
+    </div>
+    <div class="form-group" id="messageStock"></div>
+
+    <!-- Images -->
+    <div class="form-group">
+      <label
+        for="images"
+        style="
+          cursor: pointer;
+          display: block;
+          padding: 10px;
+          border: 2px dashed #ccc;
+          text-align: center;
+          border-radius: 5px;
+        "
+      >
+        Click or Drag & Drop Images Here
+      </label>
+      <input
+        type="file"
+        class="form-control item"
+        id="images"
+        name="images"
+        multiple
+        accept="image/*"
+        style="display: none"
+      />
+    </div>
+
+    <div
+      class="form-group"
+      id="imagePreview"
+      style="display: flex; flex-wrap: wrap; gap: 10px"
+    ></div>
+
+    <div class="form-group">
+      <label>Current Images</label><br />
+      {% for img in product.images.all %}
+      <img
+        src="{{ img.image.url }}"
+        alt="Product Image"
+        width="120"
+        class="m-2"
+        style="border-radius: 8px; border: 1px solid #ccc"
+      />
+      {% empty %}
+      <p>No images uploaded yet.</p>
+      {% endfor %}
+    </div>
+
+    <!-- Submit Button -->
+    <div class="form-group">
+      <input
+        type="submit"
+        class="btn btn-block create-account"
+        value="Update Product"
+      />
+    </div>
+  </form>
+</div>
+
+<script>
+    let selectedFiles = [];
+
+    // Image preview with remove button
+    document.getElementById("images").addEventListener("change", function () {
+      const files = Array.from(this.files);
+      selectedFiles = selectedFiles.concat(files);
+      renderPreviews();
+    });
+
+    function renderPreviews() {
+      const preview = document.getElementById("imagePreview");
+      preview.innerHTML = "";
+      selectedFiles.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const div = document.createElement("div");
+          div.style.position = "relative";
+          div.style.display = "inline-block";
+
+          const img = document.createElement("img");
+          img.src = e.target.result;
+          img.style.width = "100px";
+          img.style.height = "100px";
+          img.style.objectFit = "cover";
+          img.style.border = "1px solid #ccc";
+          img.style.padding = "2px";
+          div.appendChild(img);
+
+          const cross = document.createElement("span");
+          cross.innerHTML = "&times;";
+          cross.style.position = "absolute";
+          cross.style.top = "0";
+          cross.style.right = "0";
+          cross.style.background = "rgba(255,255,255,0.7)";
+          cross.style.borderRadius = "50%";
+          cross.style.padding = "0 5px";
+          cross.style.cursor = "pointer";
+          cross.addEventListener("click", function () {
+            selectedFiles.splice(index, 1);
+            renderPreviews();
+          });
+          div.appendChild(cross);
+
+          preview.appendChild(div);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // Submit handler
+    document
+      .querySelector("#product-form")
+      .addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const csrftoken = document.querySelector(
+          "[name=csrfmiddlewaretoken]"
+        ).value;
+        const productId = this.dataset.productid;
+        let formData = new FormData();
+
+        formData.append("name", document.getElementById("name").value);
+        formData.append(
+          "description",
+          document.getElementById("description").value
+        );
+        formData.append("category", document.getElementById("category").value);
+        formData.append("price", document.getElementById("price").value);
+        if (document.getElementById("discount_price").value)
+          formData.append(
+            "discount_price",
+            document.getElementById("discount_price").value
+          );
+        formData.append(
+          "stock_quantity",
+          document.getElementById("stock_quantity").value
+        );
+
+        selectedFiles.forEach((file) => formData.append("images", file));
+
+        fetch(`/zepkart-seller/update-product/${productId}/`, {
+    method: "POST",
+    headers: { "X-CSRFToken": csrftoken },
+    body: formData,
+  })
+    .then((res) => res.json())
+    .then((res) => res.json())
+    .then((result) => {
+      if (result.success) {
+        alert("✅ Product updated successfully!");
+        window.location.href = result.redirect_url;
+      } else {
+        alert("❌ Error: " + result.message);
+      }
+    });
+});
+
+    // Drag & drop support
+    const imageInput = document.getElementById("images");
+    const imageLabel = document.querySelector("label[for='images']");
+    imageLabel.addEventListener("click", () => imageInput.click());
+    imageLabel.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      imageLabel.style.background = "#f0f0f0";
+    });
+    imageLabel.addEventListener("dragleave", (e) => {
+      e.preventDefault();
+      imageLabel.style.background = "transparent";
+    });
+    imageLabel.addEventListener("drop", (e) => {
+      e.preventDefault();
+      const dt = e.dataTransfer;
+      const files = Array.from(dt.files);
+      selectedFiles = selectedFiles.concat(files);
+      renderPreviews();
+      imageLabel.style.background = "transparent";
+    });
+
+    // Load font-awesome if not already loaded
+    let faLink = document.createElement("link");
+    faLink.rel = "stylesheet";
+    faLink.href =
+      "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css";
+    faLink.integrity =
+      "sha512-dYx4vCqGqY9+uKCh6r9bYjE5xj7RkJqzqI2GZ5L3B1tT6e1v+L6x2mFj0l/9JxK8GkDk5QHplv7LJ9uXk+J3Fg==";
+    faLink.crossOrigin = "anonymous";
+    faLink.referrerPolicy = "no-referrer";
+    document.head.appendChild(faLink);
+</script>
+
+{% endblock %}

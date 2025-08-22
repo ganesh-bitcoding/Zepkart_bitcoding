@@ -91,9 +91,12 @@ class BeSellerView(LoginRequiredMixin, generic.View):
     def post(self, request, *args, **kwargs):
         if request.method == 'POST':
             try :
-                data = json.loads(request.body)
-                
-                storename = data.get('storename')
+                if request.content_type == "application/json":
+                    data = json.loads(request.body.decode("utf-8"))
+                else:
+                    data = request.POST
+
+                store_name = data.get('store_name')  # fixed key
                 phone_number = data.get('phone_number')
                 address = data.get('address')
                 business_type = data.get('business_type')
@@ -106,12 +109,26 @@ class BeSellerView(LoginRequiredMixin, generic.View):
                 return_address = data.get('return_address')
                 User_group = Group.objects.get(name='Seller')
                 user = request.user
-                new_seller = Seller(user=user,store_name=storename,phone_number=phone_number,address=address,business_type=business_type,gst_number=gst_number,pan_number=pan_number,bank_account_number=bank_account_number,ifsc_code=ifsc_code,bank_name=bank_name,pickup_address=pickup_address,return_address=return_address)
-                new_seller.save()
+                new_seller = Seller.objects.create(
+                user=user,
+                store_name=store_name,
+                phone_number=phone_number,
+                address=address,
+                business_type=business_type,
+                gst_number=gst_number,
+                pan_number=pan_number,
+                bank_account_number=bank_account_number,
+                ifsc_code=ifsc_code,
+                bank_name=bank_name,
+                pickup_address=pickup_address,
+                return_address=return_address,
+            )
                 user.groups.add(User_group)
+                print(user.groups.get())
+                
                 return redirect('login')
             except Exception as e:
-                return JsonResponse({"error": str(e)}, status=400)
+                return render(request, self.template_name)
         else :
             return render(request, self.template_name)
     

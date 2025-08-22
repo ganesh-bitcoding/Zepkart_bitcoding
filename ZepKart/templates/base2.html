@@ -5,12 +5,24 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="shortcut icon" href='{% static "assets/og_logo_zepkart.ico" %}' type="image/x-icon">
-    <title>{% block title %}{{ title|default:"Welcome Back to ZepKart !!" }}{% endblock %}</title>
+    <link
+      rel="shortcut icon"
+      href='{% static "assets/og_logo_zepkart.ico" %}'
+      type="image/x-icon"
+    />
+    <title>
+      {% block title %}{{ title|default:"Welcome Back to ZepKart !!"
+      }}{%endblock %}
+    </title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.min.css"
       rel="stylesheet"
     />
+
     <link
       rel="stylesheet"
       href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
@@ -20,7 +32,26 @@
       body {
         background-color: #fcffde;
       }
-      .navbar{
+      .btn-group-responsive {
+        display: flex;
+        justify-content: space-between; /* pushes buttons to left & right */
+        align-items: center; /* vertically center them */
+        gap: 10px;
+      }
+
+      .btn-group-responsive .card-btn {
+        flex: unset; /* Each button takes equal space */
+        text-align: center; /* Center text */
+      }
+
+      .card-img-top {
+        width: 100%; /* full card width */
+        height: 200px; /* fixed height */
+        object-fit: contain; /* show full image, keep aspect ratio */
+        background-color: #f8f9fa; /* optional: gray bg for empty space */
+        padding: 5px; /* optional: spacing inside */
+      }
+      .navbar {
         background-color: #f1ff28;
       }
       .registration-form {
@@ -29,7 +60,7 @@
       .form-control:focus {
         border-color: #f1ff28; /* orange border */
         box-shadow: 0 0 5px 2px rgba(218, 241, 6, 0.5);
-        }   
+      }
 
       .registration-form form {
         background-color: #fff;
@@ -98,47 +129,77 @@
       }
     </style>
   </head>
-  <body> 
-     <nav class="navbar navbar-expand-lg text-dark">
-  <div class="container-fluid">
-    <img src="{% static 'assets/og_logo_zepkart.svg' %}" alt="Logo" width="40" height="35" class="d-inline-block align-text-top">
-    <a class="navbar-brand text-dark" href="#">ZepKart</a>
-    <button class="navbar-toggler text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav mr-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link active text-dark" aria-current="page" href="#">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-dark" href="#">Link</a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Dropdown
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
+  <body>
+    <nav class="navbar navbar-expand-lg text-dark">
+      <div class="container-fluid">
+        <img
+          src="{% static 'assets/og_logo_zepkart.svg' %}"
+          alt="Logo"
+          width="40"
+          height="35"
+          class="d-inline-block align-text-top"
+        />
+        <a class="navbar-brand text-dark" href="#">ZepKart</a>
+        <button
+          class="navbar-toggler text-dark"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active text-dark" aria-current="page" href="#"
+                >Home</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-dark" href="#">Link</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                Dropdown
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <a class="dropdown-item" href="#">Something else here</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+            </li>
           </ul>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-        </li>
-      </ul>
-      <form class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-        <button class="btn btn-outline-success" type="submit">Search</button>
-      </form>
-    </div>
-  </div>
-</nav>
-{% block start %}
-{% endblock  %}
-  <script
+          <form class="d-flex" role="search">
+            <input
+              class="form-control me-2"
+              type="search"
+              placeholder="Search"
+              aria-label="Search"
+            />
+            <button class="btn btn-outline-success" type="submit">
+              Search
+            </button>
+          </form>
+        </div>
+      </div>
+    </nav>
+    {% block start %} {% endblock %}
+    <script
       type="text/javascript"
       src="https://code.jquery.com/jquery-3.2.1.min.js"
     ></script>
@@ -146,5 +207,5 @@
       type="text/javascript"
       src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.15/jquery.mask.min.js"
     ></script>
-      </body>
+  </body>
 </html>

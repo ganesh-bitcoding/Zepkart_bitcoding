@@ -1,0 +1,294 @@
+{% extends "../base2.html" %} 
+{% block title %}{{"Adding Product on " }}{{user.seller.store_name}}{% endblock %}
+{% block start %}
+<div class="registration-form">
+  <form method="post" enctype="multipart/form-data" id="product-form">
+    {% csrf_token %}
+    <div class="form-icon">
+      <span><i class="fa-solid fa-box-open"></i></span>
+    </div>
+
+    <!-- Product Name -->
+    <div class="form-group">
+      <input
+        type="text"
+        class="form-control item"
+        id="name"
+        name="name"
+        placeholder="Product Name"
+      />
+    </div>
+    <div class="form-group" id="messageName"></div>
+
+    <!-- Description -->
+    <div class="form-group">
+      <textarea
+        class="form-control item"
+        id="description"
+        name="description"
+        placeholder="Product Description"
+      ></textarea>
+    </div>
+    <div class="form-group" id="messageDescription"></div>
+
+    <!-- Category -->
+    <div class="form-group">
+      <input
+        type="text"
+        class="form-control item"
+        id="category"
+        name="category"
+        placeholder="Category"
+      />
+    </div>
+    <div class="form-group" id="messageCategory"></div>
+
+    <!-- Price -->
+    <div class="form-group">
+      <input
+        type="number"
+        step="0.01"
+        class="form-control item"
+        id="price"
+        name="price"
+        placeholder="Price"
+      />
+    </div>
+    <div class="form-group" id="messagePrice"></div>
+
+    <!-- Discount Price -->
+    <div class="form-group">
+      <input
+        type="number"
+        step="0.01"
+        class="form-control item"
+        id="discount_price"
+        name="discount_price"
+        placeholder="Discount Price (Optional)"
+      />
+    </div>
+    <div class="form-group" id="messageDiscount"></div>
+
+    <!-- Stock Quantity -->
+    <div class="form-group">
+      <input
+        type="number"
+        class="form-control item"
+        id="stock_quantity"
+        name="stock_quantity"
+        placeholder="Stock Quantity"
+      />
+    </div>
+    <div class="form-group" id="messageStock"></div>
+
+    <!-- Images -->
+
+    <div class="form-group">
+      <label
+        for="images"
+        style="
+          cursor: pointer;
+          display: block;
+          padding: 10px;
+          border: 2px dashed #ccc;
+          text-align: center;
+          border-radius: 5px;
+        "
+      >
+        Click or Drag & Drop Images Here
+      </label>
+      <input
+        type="file"
+        class="form-control item"
+        id="images"
+        multiple
+        accept="image/*"
+        style="display: none"
+      />
+    </div>
+    <div
+      class="form-group"
+      id="imagePreview"
+      style="display: flex; flex-wrap: wrap; gap: 10px"
+    ></div>
+    <div class="form-group" id="messageImages"></div>
+
+    <!-- Submit Button -->
+    <div class="form-group">
+      <input
+        type="submit"
+        class="btn btn-block create-account"
+        value="Add Product"
+      />
+    </div>
+  </form>
+</div>
+
+<script>
+  let selectedFiles = [];
+
+  function makeChild(messageinfo) {
+    let div = document.createElement("div");
+    div.setAttribute("class", "alert alert-danger");
+    let text = document.createTextNode(messageinfo);
+    div.appendChild(text);
+    return div;
+  }
+
+  // Image preview with remove button
+  document.getElementById("images").addEventListener("change", function () {
+    const files = Array.from(this.files);
+    selectedFiles = selectedFiles.concat(files);
+    renderPreviews();
+  });
+
+  function renderPreviews() {
+    const preview = document.getElementById("imagePreview");
+    preview.innerHTML = "";
+    selectedFiles.forEach((file, index) => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const div = document.createElement("div");
+        div.setAttribute("style", "position:relative; display:inline-block;");
+
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        img.style.width = "100px";
+        img.style.height = "100px";
+        img.style.objectFit = "cover";
+        img.style.border = "1px solid #ccc";
+        img.style.padding = "2px";
+        div.appendChild(img);
+
+        const cross = document.createElement("span");
+        cross.innerHTML = "&times;";
+        cross.style.position = "absolute";
+        cross.style.top = "0";
+        cross.style.right = "0";
+        cross.style.background = "rgba(255,255,255,0.7)";
+        cross.style.borderRadius = "50%";
+        cross.style.padding = "0 5px";
+        cross.style.cursor = "pointer";
+        cross.addEventListener("click", function () {
+          selectedFiles.splice(index, 1);
+          renderPreviews();
+        });
+        div.appendChild(cross);
+
+        preview.appendChild(div);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  document
+    .querySelector("#product-form")
+    .addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      // Clear previous messages
+      messageName.innerHTML = "";
+      messageDescription.innerHTML = "";
+      messageCategory.innerHTML = "";
+      messagePrice.innerHTML = "";
+      messageDiscount.innerHTML = "";
+      messageStock.innerHTML = "";
+      messageImages.innerHTML = "";
+
+      let name = document.getElementById("name").value;
+      let description = document.getElementById("description").value;
+      let category = document.getElementById("category").value;
+      let price = document.getElementById("price").value;
+      let discount_price = document.getElementById("discount_price").value;
+      let stock_quantity = document.getElementById("stock_quantity").value;
+
+      let csrftoken = document.querySelector(
+        "[name=csrfmiddlewaretoken]"
+      ).value;
+
+      let hasError = false;
+      if (!name) {
+        messageName.appendChild(makeChild("Product Name is required"));
+        hasError = true;
+      }
+      if (!description) {
+        messageDescription.appendChild(makeChild("Description is required"));
+        hasError = true;
+      }
+      if (!category) {
+        messageCategory.appendChild(makeChild("Category is required"));
+        hasError = true;
+      }
+      if (!price) {
+        messagePrice.appendChild(makeChild("Price is required"));
+        hasError = true;
+      }
+      if (!stock_quantity) {
+        messageStock.appendChild(makeChild("Stock Quantity is required"));
+        hasError = true;
+      }
+      if (selectedFiles.length === 0) {
+        messageImages.appendChild(makeChild("At least one image is required"));
+        hasError = true;
+      }
+
+      if (hasError) return;
+
+      let formData = new FormData();
+      formData.append("name", name);
+      formData.append("description", description);
+      formData.append("category", category);
+      formData.append("price", price);
+      if (discount_price) formData.append("discount_price", discount_price);
+      formData.append("stock_quantity", stock_quantity);
+      selectedFiles.forEach((file) => formData.append("images", file));
+
+      fetch("/zepkart-seller/add-product/", {
+        method: "POST",
+        headers: { "X-CSRFToken": csrftoken },
+        body: formData,
+      })
+        .then((res) => res.json())
+        .then((result) => {
+          if (result.success) {
+            alert("Product added successfully!");
+            window.location.reload();
+          } else {
+            alert("Error: " + result.message);
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    });
+</script>
+<script>
+const imageInput = document.getElementById("images");
+const imageLabel = document.querySelector("label[for='images']");
+
+// Clickable label triggers file input
+imageLabel.addEventListener("click", () => imageInput.click());
+
+// Optional: Drag & drop support
+imageLabel.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  imageLabel.style.background = "#f0f0f0";
+});
+imageLabel.addEventListener("dragleave", (e) => {
+  e.preventDefault();
+  imageLabel.style.background = "transparent";
+});
+imageLabel.addEventListener("drop", (e) => {
+  e.preventDefault();
+  const dt = e.dataTransfer;
+  const files = Array.from(dt.files);
+  selectedFiles = selectedFiles.concat(files);
+  renderPreviews();
+  imageLabel.style.background = "transparent";
+});
+let text = document.createElement('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-dYx4vCqGqY9+uKCh6r9bYjE5xj7RkJqzqI2GZ5L3B1tT6e1v+L6x2mFj0l/9JxK8GkDk5QHplv7LJ9uXk+J3Fg==" crossorigin="anonymous" referrerpolicy="no-referrer"/>');
+document.querySelector("head").appendChild(text);
+</script>
+
+
+{% endblock %}

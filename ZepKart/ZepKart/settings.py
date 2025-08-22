@@ -83,6 +83,10 @@ STATICFILES_DIRS = [
 # Folder where 'collectstatic' will gather all static files for production
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / "media"
+
+
 
 WSGI_APPLICATION = 'ZepKart.wsgi.application'
 
@@ -132,6 +136,7 @@ USE_I18N = True
 
 USE_TZ = True
 
+APPEND_SLASH=False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
