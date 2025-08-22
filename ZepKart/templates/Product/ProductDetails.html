@@ -1,14 +1,31 @@
 {% extends "../base2.html" %}
-{% block title %}Adding Product on {{ user.seller.store_name }}{% endblock %}
-
+{% block title %}{{ product.name }}{% endblock %}
 {% block start %}
-<div class="mt-3 text-center text-decoration">
-  <h1 class="font-weight-bold">{{ product.name }}</h1>
-</div>
+<style>
+  .carousel-img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+  }
 
-<!-- Carousel -->
-<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-  <div class="carousel-inner">
+  .carousel-inner {
+    height: 400px; /* Set your desired fixed height here */
+  }
+
+  @media (max-width: 768px) {
+    .carousel-inner {
+      height: 250px; /* Adjust for smaller screens if needed */
+    }
+  }
+</style>
+
+
+<div class="container mt-4 bg-warning-subtle" style="background-color: #fcffde;">
+<div class="row align-items-stretch same-height-row">
+  <!-- Carousel column -->
+  <div class="col-lg-6 col-md-12 mb-3 d-flex">
+    <div id="carouselExampleControls" class="carousel slide w-100" data-ride="carousel">
+      <div class="carousel-inner">
     {% for img in product.images.all %}
       <div class="carousel-item {% if forloop.first %}active{% endif %}">
         <img src="{{ img.image.url }}" alt="Product Image" class="d-block w-100 carousel-img" />
@@ -19,141 +36,69 @@
       </div>
     {% endfor %}
   </div>
-
-  <!-- Controls -->
-  <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="sr-only">Previous</span>
-  </a>
-  <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="sr-only">Next</span>
-  </a>
-</div>
-
-<!-- Product info -->
-<div class="mt-3 text-center">
-    <p class="font-weight-bold">Price: ₹{{ product.price }}</p>
-    <p class="text-muted">{{ product.category }}</p>
-  <p class="textarea">{{ product.description }}</p>
-</div>
-
-<!-- Floating buttons -->
-<a href="{% url 'UpdateProduct' product.id %}" class="floating-btn floating-btn-update">Update</a>
-<a href="javascript:void(0);" 
-   class="floating-btn floating-btn-delete js-open-delete" 
-   data-delete-url="{% url 'DeleteProduct' product.id %}" 
-   data-product-name="{{ product.name|escape }}">
-   Delete
-</a>
-
-<!-- One reusable vanilla modal -->
-<div class="vmodal-backdrop" id="deleteBackdrop" aria-hidden="true">
-  <div class="vmodal" role="dialog" aria-modal="true" aria-labelledby="vmodalTitle">
-    <div class="vmodal__header">
-      <h5 class="vmodal__title" id="vmodalTitle">Confirm Delete</h5>
-      <button class="vmodal__close" type="button" aria-label="Close" id="vmClose">&times;</button>
+      <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+      </a>
     </div>
-    <div class="vmodal__body">
-      <p id="vmText">Are you sure you want to delete this product?</p>
-    </div>
-    <div class="vmodal__footer">
-      <button class="btn-v btn-v-secondary" type="button" id="vmCancel">Cancel</button>
-      <a class="btn-v btn-v-danger" id="vmConfirm" href="#">Yes, Delete</a>
+  </div>
+
+  <!-- Product info column -->
+  <div class="col-lg-6 col-md-12 mb-3 d-flex">
+    <div class="card shadow-sm p-3 w-100 h-100 d-flex flex-column">
+      <div class="card-body mycontainer d-flex flex-column h-100">
+        <h2 class="card-title font-weight-bold">{{product.name}}</h2>
+        <p class="text-muted">{{product.category}}</p>
+        <p class="text-muted">Seller: {{user}}</p>
+        <p class="text-muted">Store: {{product.seller.store_name}}</p>
+        <p class="text-muted">Brand: Optional</p>
+        <h4 class="text-danger">{{product.price}}$</h4>
+        <div class="mt-auto">
+          <button class="btn btn-outline-warning btn-lg mr-2">Add to Cart</button>
+          <button class="btn btn-outline-secondary btn-lg">Buy Now</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- Scripts -->
-<script>
-  (function () {
-    const backdrop = document.getElementById('deleteBackdrop');
-    const vmText   = document.getElementById('vmText');
-    const vmCancel = document.getElementById('vmCancel');
-    const vmClose  = document.getElementById('vmClose');
-    const vmConfirm= document.getElementById('vmConfirm');
 
-    function openModal(name, url){
-      vmText.textContent = `Are you sure you want to delete "${name}"?`;
-      vmConfirm.setAttribute('href', url);
-      backdrop.style.display = 'flex';
-      document.body.style.overflow = 'hidden';
-    }
-    function closeModal(){
-      backdrop.style.display = 'none';
-      document.body.style.overflow = '';
-    }
+<!-- Product Description -->
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="card shadow-sm p-4 bg-light">
+      <h4 class="border-bottom pb-2 mb-3 font-weight-bold">Product Description</h4>
+      {% if product.description %}
+        <p class="text-dark" style="font-size: 1.1rem; line-height: 1.6;">
+          {{ product.description|linebreaks }}
+        </p>
+      {% else %}
+        <p class="text-muted">No description available for this product.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
 
-    document.addEventListener('click', function(e){
-      const btn = e.target.closest('.js-open-delete');
-      if(!btn) return;
-      const url = btn.getAttribute('data-delete-url');
-      const name = btn.getAttribute('data-product-name') || 'this product';
-      openModal(name, url);
-    });
 
-    vmCancel.addEventListener('click', closeModal);
-    vmClose.addEventListener('click', closeModal);
-    backdrop.addEventListener('click', function(e){
-      if(e.target === backdrop) closeModal();
-    });
+  <!-- Product Reviews -->
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="card shadow-sm p-4 bg-light">
+      <h4 class="border-bottom pb-2 mb-3 font-weight-bold">Product Reviews</h4>
+        <p>No reviews yet.</p>
+      </div>
+    </div>
+  </div>
 
-    document.addEventListener('keydown', function(e){
-      if(e.key === 'Escape' && backdrop.style.display === 'flex') closeModal();
-    });
-  })();
-</script>
+</div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-<!-- CSS -->
-<style>
-  .carousel {
-    width: 75%;
-    margin: 0 auto;
-  }
-  .carousel-img {
-    width: 100%;
-    height: 400px;
-    object-fit: contain;
-    border-radius: 12px;
-    border: 1px solid #ccc;
-  }
-  .floating-btn {
-    position: fixed;
-    bottom: 20px;
-    padding: 12px 20px;
-    border-radius: 50px;
-    font-size: 16px;
-    text-decoration: none;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    z-index: 1000;
-    transition: background-color 0.3s;
-  }
-  .floating-btn-update {
-    left: 20px;
-    background-color: #f1ff28;
-    color: black;
-  }
-  .floating-btn-delete {
-    right: 20px;
-    background-color: #ff0000;
-    color: black;
-  }
-  /* Vanilla modal styles */
-  .vmodal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:1050}
-  .vmodal{width:min(480px,92vw);background:#fff;border-radius:14px;box-shadow:0 15px 50px rgba(0,0,0,.25);overflow:hidden}
-  .vmodal__header{padding:14px 18px;background:#dc3545;color:#fff;display:flex;align-items:center;justify-content:space-between}
-  .vmodal__title{margin:0;font-size:1.05rem;font-weight:600}
-  .vmodal__close{background:transparent;border:0;color:#fff;font-size:1.4rem;cursor:pointer;line-height:1}
-  .vmodal__body{padding:18px;font-size:.95rem;color:#333}
-  .vmodal__footer{padding:12px 18px;display:flex;gap:10px;justify-content:flex-end;background:#f7f7f8}
-  .btn-v{border:0;border-radius:10px;padding:8px 14px;cursor:pointer}
-  .btn-v-secondary{background:#e9ecef}
-  .btn-v-danger{background:#dc3545;color:#fff}
-  .btn-v-secondary:hover{filter:brightness(.96)}
-  .btn-v-danger:hover{filter:brightness(.94)}
-</style>
 {% endblock %}
